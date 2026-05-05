@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý khách hàng</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="container">
+    <div class="topbar">
+        <h1>Quản lý thông tin khách hàng</h1>
+        <a class="button secondary" th:href="@{/home}">Về trang chủ</a>
+    </div>
+    <form method="get" th:action="@{/customers}" class="toolbar">
+        <input type="text" name="keyword" placeholder="Tìm theo tên hoặc số điện thoại" th:value="${keyword}">
+        <input type="hidden" name="page" value="0">
+        <input type="hidden" name="size" th:value="${size}">
+        <button type="submit">Tìm kiếm</button>
+        <a class="button" th:href="@{/customers/new}">Thêm khách hàng</a>
+    </form>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Họ tên</th>
+            <th>Số điện thoại</th>
+            <th>Email</th>
+            <th>Tổng chi tiêu</th>
+            <th>Trạng thái</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="customer : ${customers}">
+            <td th:text="${customer.id}"></td>
+            <td th:text="${customer.fullName}"></td>
+            <td th:text="${customer.phoneNumber}"></td>
+            <td th:text="${customer.email}"></td>
+            <td th:text="${#numbers.formatDecimal(customer.totalRevenue, 1, 'NONE', 0, 'POINT') + ' đ'}"></td>
+            <td th:text="${customer.status == 1 ? 'Hoạt động' : 'Ngừng hoạt động'}"></td>
+            <td><a class="action-link" th:href="@{'/customers/' + ${customer.id} + '/edit'}">Cập nhật</a></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(customers)}">
+            <td colspan="7" class="empty-state">Không có khách hàng phù hợp</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="pagination" th:if="${totalPages > 1}">
+        <a th:if="${currentPage > 0}"
+           th:href="@{/customers(keyword=${keyword}, page=${currentPage - 1}, size=${size})}">Trước</a>
+        <span>Trang <strong th:text="${currentPage + 1}"></strong>/<span th:text="${totalPages}"></span></span>
+        <a th:if="${currentPage + 1 < totalPages}"
+           th:href="@{/customers(keyword=${keyword}, page=${currentPage + 1}, size=${size})}">Sau</a>
+    </div>
+</div>
+</body>
+</html>

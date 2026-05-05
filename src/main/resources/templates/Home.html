@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Trang chủ</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="container">
+    <div class="topbar">
+        <h1>Hệ thống quản lý bán hàng siêu thị</h1>
+        <div class="user-panel">
+            <span class="welcome-text" th:text="${'Xin chào, ' + currentUser.fullName}"></span>
+            <a class="button secondary" th:href="@{/logout}">Đăng xuất</a>
+        </div>
+    </div>
+    <div class="menu-grid">
+        <a class="card menu-item" th:href="@{/customers}">Quản lý thông tin khách hàng</a>
+        <a class="card menu-item" th:href="@{/bills/counter}">Thanh toán trực tiếp tại quầy</a>
+        <a class="card menu-item" th:href="@{/statistics/income}">Thống kê doanh thu theo tháng/quý/năm</a>
+    </div>
+</div>
+</body>
+</html>

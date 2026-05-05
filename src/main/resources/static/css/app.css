@@ -1,0 +1,165 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+    color: #222;
+}
+
+a {
+    color: #1976d2;
+    text-decoration: none;
+}
+
+a:visited {
+    color: #1976d2;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 24px auto;
+    padding: 0 16px;
+}
+
+.narrow {
+    max-width: 500px;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    gap: 16px;
+}
+
+.card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.menu-grid,
+.grid-two,
+.grid-three {
+    display: grid;
+    gap: 16px;
+}
+
+.menu-grid {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-two {
+    grid-template-columns: 1fr 1fr;
+}
+
+.grid-three {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.menu-item {
+    text-decoration: none;
+    color: #222;
+    font-weight: bold;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    background: #fff;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+input, select, button, .button {
+    padding: 8px 10px;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+button, .button {
+    background: #1976d2;
+    color: #fff;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.button:visited,
+.button:hover,
+.button:active,
+.button:focus {
+    color: #fff;
+    text-decoration: none;
+}
+
+button.secondary {
+    background: #777;
+}
+
+.user-panel {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.welcome-text {
+    font-weight: 600;
+}
+
+.toolbar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.error {
+    color: #c62828;
+}
+
+.success {
+    color: #2e7d32;
+}
+
+.pagination {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+.pagination a {
+    color: #1976d2;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.empty-state {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+}
+
+.action-link {
+    font-weight: 600;
+}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thông tin khách hàng</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="container narrow">
+    <div class="topbar">
+        <h1>Thông tin khách hàng</h1>
+        <a class="button secondary" th:href="@{/customers}">Quay lại</a>
+    </div>
+    <form th:action="@{${action}}" th:object="${customerForm}" method="post" class="card">
+        <label>Họ tên</label>
+        <input type="text" th:field="*{fullName}">
+        <small class="error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></small>
+
+        <label>Địa chỉ</label>
+        <input type="text" th:field="*{address}">
+
+        <label>Số điện thoại</label>
+        <input type="text" th:field="*{phoneNumber}">
+        <small class="error" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></small>
+
+        <label>Email</label>
+        <input type="text" th:field="*{email}">
+
+        <label>Ghi chú</label>
+        <input type="text" th:field="*{note}">
+
+        <label>Tổng chi tiêu</label>
+        <input type="number" step="0.01" th:field="*{totalRevenue}">
+
+        <label>Điểm tích lũy</label>
+        <input type="number" step="0.01" th:field="*{rewardPoint}">
+
+        <label>Trạng thái</label>
+        <select th:field="*{status}">
+            <option value="1">Hoạt động</option>
+            <option value="0">Ngừng hoạt động</option>
+        </select>
+
+        <p class="error" th:if="${error}" th:text="${error}"></p>
+        <button type="submit">Lưu</button>
+    </form>
+</div>
+</body>
+</html>

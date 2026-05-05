@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thanh toán tại quầy</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="container">
+    <div class="topbar">
+        <h1>Thanh toán trực tiếp tại quầy</h1>
+        <a class="button secondary" th:href="@{/home}">Về trang chủ</a>
+    </div>
+    <p class="error" th:if="${error}" th:text="${error}"></p>
+    <p class="success" th:if="${success}" th:text="${success}"></p>
+
+    <div class="grid-two">
+        <div class="card">
+            <h2>Tìm mặt hàng</h2>
+            <form method="get" th:action="@{/bills/counter}" class="toolbar">
+                <input type="text" name="itemKeyword" placeholder="Tên mặt hàng" th:value="${itemKeyword}">
+                <input type="hidden" name="customerKeyword" th:value="${customerKeyword}">
+                <input type="hidden" name="selectedCustomerId" th:value="${selectedCustomer != null ? selectedCustomer.id : ''}">
+                <input type="hidden" name="itemPage" value="0">
+                <input type="hidden" name="customerPage" th:value="${customerCurrentPage}">
+                <button type="submit">Tìm</button>
+            </form>
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên</th>
+                    <th>Giá</th>
+                    <th>Tồn kho</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${items}">
+                    <td th:text="${item.id}"></td>
+                    <td th:text="${item.name}"></td>
+                    <td th:text="${#numbers.formatDecimal(item.salePrice, 1, 'NONE', 0, 'POINT') + ' đ'}"></td>
+                    <td th:text="${item.stockQuantity}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(items)}">
+                    <td colspan="4" class="empty-state">Không có mặt hàng phù hợp</td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="pagination" th:if="${itemTotalPages > 1}">
+                <a th:if="${itemCurrentPage > 0}"
+                   th:href="@{/bills/counter(itemKeyword=${itemKeyword}, customerKeyword=${customerKeyword}, selectedCustomerId=${selectedCustomer != null ? selectedCustomer.id : null}, itemPage=${itemCurrentPage - 1}, customerPage=${customerCurrentPage})}">Trước</a>
+                <span>Trang <strong th:text="${itemCurrentPage + 1}"></strong>/<span th:text="${itemTotalPages}"></span></span>
+                <a th:if="${itemCurrentPage + 1 < itemTotalPages}"
+                   th:href="@{/bills/counter(itemKeyword=${itemKeyword}, customerKeyword=${customerKeyword}, selectedCustomerId=${selectedCustomer != null ? selectedCustomer.id : null}, itemPage=${itemCurrentPage + 1}, customerPage=${customerCurrentPage})}">Sau</a>
+            </div>
+
+            <form th:action="@{/bills/cart/add}" th:object="${cartItemForm}" method="post">
+                <label>Item ID</label>
+                <input type="number" th:field="*{itemId}">
+                <label>Số lượng</label>
+                <input type="number" th:field="*{quantity}">
+                <button type="submit">Thêm vào hóa đơn</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Tra cứu khách hàng tích điểm</h2>
+            <form method="get" th:action="@{/bills/counter}" class="toolbar">
+                <input type="text" name="customerKeyword" placeholder="Số điện thoại hoặc tên khách hàng" th:value="${customerKeyword}">
+                <input type="hidden" name="itemKeyword" th:value="${itemKeyword}">
+                <input type="hidden" name="selectedCustomerId" th:value="${selectedCustomer != null ? selectedCustomer.id : ''}">
+                <input type="hidden" name="itemPage" th:value="${itemCurrentPage}">
+                <input type="hidden" name="customerPage" value="0">
+                <button type="submit">Tìm khách hàng</button>
+            </form>
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Họ tên</th>
+                    <th>Số điện thoại</th>
+                    <th>Trạng thái</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="customer : ${customers}">
+                    <td th:text="${customer.id}"></td>
+                    <td th:text="${customer.fullName}"></td>
+                    <td th:text="${customer.phoneNumber}"></td>
+                    <td th:text="${customer.status == 1 ? 'Hoạt động' : 'Ngừng hoạt động'}"></td>
+                    <td>
+                        <a class="action-link" th:href="@{/bills/counter(selectedCustomerId=${customer.id}, itemKeyword=${itemKeyword}, customerKeyword=${customerKeyword}, itemPage=${itemCurrentPage}, customerPage=${customerCurrentPage})}">Chọn</a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(customers)}">
+                    <td colspan="5" class="empty-state">Không có khách hàng phù hợp</td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="pagination" th:if="${customerTotalPages > 1}">
+                <a th:if="${customerCurrentPage > 0}"
+                   th:href="@{/bills/counter(itemKeyword=${itemKeyword}, customerKeyword=${customerKeyword}, selectedCustomerId=${selectedCustomer != null ? selectedCustomer.id : null}, itemPage=${itemCurrentPage}, customerPage=${customerCurrentPage - 1})}">Trước</a>
+                <span>Trang <strong th:text="${customerCurrentPage + 1}"></strong>/<span th:text="${customerTotalPages}"></span></span>
+                <a th:if="${customerCurrentPage + 1 < customerTotalPages}"
+                   th:href="@{/bills/counter(itemKeyword=${itemKeyword}, customerKeyword=${customerKeyword}, selectedCustomerId=${selectedCustomer != null ? selectedCustomer.id : null}, itemPage=${itemCurrentPage}, customerPage=${customerCurrentPage + 1})}">Sau</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Hóa đơn tạm</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Mặt hàng</th>
+                <th>SL</th>
+                <th>Đơn giá</th>
+                <th>Thành tiền</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="cartItem : ${cartItems}">
+                <td th:text="${cartItem.itemName}"></td>
+                <td th:text="${cartItem.quantity}"></td>
+                <td th:text="${#numbers.formatDecimal(cartItem.unitPrice, 1, 'NONE', 0, 'POINT') + ' đ'}"></td>
+                <td th:text="${#numbers.formatDecimal(cartItem.lineAmount, 1, 'NONE', 0, 'POINT') + ' đ'}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <p><strong>Tổng tiền:</strong> <span th:text="${#numbers.formatDecimal(cartTotal, 1, 'NONE', 0, 'POINT') + ' đ'}"></span></p>
+        <div th:if="${selectedCustomer != null}">
+            <p><strong>Khách hàng tích điểm:</strong> <span th:text="${selectedCustomer.fullName}"></span></p>
+            <p><strong>Số điện thoại:</strong> <span th:text="${selectedCustomer.phoneNumber}"></span></p>
+            <p><strong>Tổng chi tiêu:</strong> <span th:text="${#numbers.formatDecimal(selectedCustomer.totalRevenue, 1, 'NONE', 0, 'POINT') + ' đ'}"></span></p>
+            <p><strong>Điểm tích lũy:</strong> <span th:text="${selectedCustomer.rewardPoint}"></span></p>
+        </div>
+        <div th:if="${selectedCustomer == null}">
+            <p><strong>Khách hàng:</strong> Khách lẻ</p>
+        </div>
+
+        <form th:action="@{/bills/checkout}" th:object="${checkoutForm}" method="post">
+            <input type="hidden" th:field="*{customerId}">
+
+            <label>Phương thức thanh toán</label>
+            <select th:field="*{paymentMethod}" id="paymentMethod">
+                <option value="CASH">Tiền mặt</option>
+                <option value="QR">Quét mã / Chuyển khoản</option>
+                <option value="CARD">Thẻ</option>
+            </select>
+
+            <label th:if="${selectedCustomer != null}">Sử dụng điểm tích lũy</label>
+            <select th:if="${selectedCustomer != null}" th:field="*{useRewardPoint}" id="useRewardPoint">
+                <option th:value="false">Không sử dụng</option>
+                <option th:value="true">Sử dụng điểm</option>
+            </select>
+
+            <div class="card">
+                <p><strong>Tổng tiền hàng:</strong> <span id="summaryTotal"></span></p>
+                <p><strong>Điểm sử dụng:</strong> <span id="summaryUsedPoint"></span></p>
+                <p><strong>Số tiền giảm từ điểm:</strong> <span id="summaryDiscount"></span></p>
+                <p><strong>Số tiền khách phải trả sau cùng:</strong> <span id="summaryFinalAmount"></span></p>
+            </div>
+
+            <div id="cashPaymentFields">
+                <label>Số tiền khách đưa</label>
+                <input type="number" step="0.01" th:field="*{receivedAmount}" id="receivedAmount">
+
+                <p><strong>Số tiền thừa trả khách:</strong> <span id="changeAmountText">0</span></p>
+            </div>
+
+            <div id="nonCashPaymentFields">
+                <label>Xác nhận thanh toán cho QR/Thẻ</label>
+                <select th:field="*{paymentConfirmed}" id="paymentConfirmed">
+                    <option th:value="false">Chưa thanh toán</option>
+                    <option th:value="true">Đã thanh toán thành công</option>
+                </select>
+            </div>
+
+            <label>Ghi chú</label>
+            <input type="text" th:field="*{note}">
+
+            <button type="submit">Thanh toán</button>
+        </form>
+        <form th:action="@{/bills/cart/clear}" method="post">
+            <button type="submit" class="secondary">Xóa hóa đơn tạm</button>
+        </form>
+    </div>
+</div>
+<script th:inline="javascript">
+    const cartTotal = Number(/*[[${cartTotal}]]*/ 0);
+    const rewardPoint = Number(/*[[${selectedCustomer != null ? selectedCustomer.rewardPoint : 0}]]*/ 0);
+
+    const paymentMethod = document.getElementById("paymentMethod");
+    const useRewardPoint = document.getElementById("useRewardPoint");
+    const receivedAmount = document.getElementById("receivedAmount");
+    const cashPaymentFields = document.getElementById("cashPaymentFields");
+    const nonCashPaymentFields = document.getElementById("nonCashPaymentFields");
+
+    const summaryTotal = document.getElementById("summaryTotal");
+    const summaryUsedPoint = document.getElementById("summaryUsedPoint");
+    const summaryDiscount = document.getElementById("summaryDiscount");
+    const summaryFinalAmount = document.getElementById("summaryFinalAmount");
+    const changeAmountText = document.getElementById("changeAmountText");
+
+    function formatMoney(value) {
+        return new Intl.NumberFormat("vi-VN").format(Math.max(0, value)) + " đ";
+    }
+
+    function getPaymentSummary() {
+        const shouldUsePoint = useRewardPoint && useRewardPoint.value === "true";
+        let usedPoint = 0;
+        let discountAmount = 0;
+
+        if (shouldUsePoint) {
+            const availablePoint = Math.floor(rewardPoint);
+            const maxUsablePointByBill = Math.floor(cartTotal / 1000);
+            usedPoint = Math.min(availablePoint, maxUsablePointByBill);
+            discountAmount = usedPoint * 1000;
+        }
+
+        return {
+            usedPoint,
+            discountAmount,
+            finalAmount: cartTotal - discountAmount
+        };
+    }
+
+    function calculateChange() {
+        const summary = getPaymentSummary();
+        const received = Number(receivedAmount.value || 0);
+        const changeAmount = received - summary.finalAmount;
+
+        if (paymentMethod.value !== "CASH") {
+            changeAmountText.textContent = "Không áp dụng";
+        } else if (changeAmount < 0) {
+            changeAmountText.textContent = "Còn thiếu " + formatMoney(Math.abs(changeAmount));
+        } else {
+            changeAmountText.textContent = formatMoney(changeAmount);
+        }
+    }
+
+    function updatePaymentView() {
+        const summary = getPaymentSummary();
+
+        summaryTotal.textContent = formatMoney(cartTotal);
+        summaryUsedPoint.textContent = summary.usedPoint;
+        summaryDiscount.textContent = formatMoney(summary.discountAmount);
+        summaryFinalAmount.textContent = formatMoney(summary.finalAmount);
+
+        const isCash = paymentMethod.value === "CASH";
+        cashPaymentFields.style.display = isCash ? "block" : "none";
+        nonCashPaymentFields.style.display = isCash ? "none" : "block";
+        calculateChange();
+    }
+
+    paymentMethod.addEventListener("change", updatePaymentView);
+    if (useRewardPoint) {
+        useRewardPoint.addEventListener("change", updatePaymentView);
+    }
+    receivedAmount.addEventListener("input", calculateChange);
+    updatePaymentView();
+</script>
+</body>
+</html>

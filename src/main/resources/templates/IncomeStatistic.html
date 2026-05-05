@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thống kê doanh thu</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="container">
+    <div class="topbar">
+        <h1>Thống kê doanh thu theo tháng/quý/năm</h1>
+        <a class="button secondary" th:href="@{/home}">Về trang chủ</a>
+    </div>
+
+    <div class="grid-three">
+        <form method="get" th:action="@{/statistics/income}" class="card">
+            <h2>Theo tháng</h2>
+            <input type="hidden" name="type" value="month">
+            <label>Tháng</label>
+            <input type="number" name="month" min="1" max="12" th:value="${month}">
+            <label>Năm</label>
+            <input type="number" name="year" th:value="${year}">
+            <button type="submit">Thống kê</button>
+        </form>
+
+        <form method="get" th:action="@{/statistics/income}" class="card">
+            <h2>Theo quý</h2>
+            <input type="hidden" name="type" value="quarter">
+            <label>Quý</label>
+            <input type="number" name="quarter" min="1" max="4" th:value="${quarter}">
+            <label>Năm</label>
+            <input type="number" name="year" th:value="${year}">
+            <button type="submit">Thống kê</button>
+        </form>
+
+        <form method="get" th:action="@{/statistics/income}" class="card">
+            <h2>Theo năm</h2>
+            <input type="hidden" name="type" value="year">
+            <label>Năm</label>
+            <input type="number" name="year" th:value="${year}">
+            <button type="submit">Thống kê</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Theo khoảng ngày</h2>
+        <form method="get" th:action="@{/statistics/income}">
+            <input type="hidden" name="type" value="dateRange">
+            <label>Từ ngày</label>
+            <input type="date" name="fromDate" th:value="${fromDate}">
+            <label>Đến ngày</label>
+            <input type="date" name="toDate" th:value="${toDate}">
+            <button type="submit">Thống kê</button>
+        </form>
+    </div>
+
+    <p class="error" th:if="${error}" th:text="${error}"></p>
+
+    <div class="card" th:if="${stat != null}">
+        <h2>Kết quả thống kê</h2>
+        <p><strong>Kỳ thống kê:</strong> <span th:text="${stat.periodType}"></span></p>
+        <p><strong>Tổng doanh thu:</strong> <span th:text="${#numbers.formatDecimal(stat.totalRevenue, 1, 'NONE', 0, 'POINT') + ' đ'}"></span></p>
+        <p><strong>Tổng số hóa đơn:</strong> <span th:text="${stat.totalBills}"></span></p>
+        <p><strong>Tổng số lượng mặt hàng bán ra:</strong> <span th:text="${stat.totalSoldQuantity}"></span></p>
+    </div>
+</div>
+</body>
+</html>
