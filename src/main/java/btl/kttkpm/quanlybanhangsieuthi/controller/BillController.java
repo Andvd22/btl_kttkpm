@@ -3,12 +3,14 @@ package btl.kttkpm.quanlybanhangsieuthi.controller;
 import btl.kttkpm.quanlybanhangsieuthi.dto.BillCartItem;
 import btl.kttkpm.quanlybanhangsieuthi.dto.CartItemForm;
 import btl.kttkpm.quanlybanhangsieuthi.dto.CheckoutForm;
+import btl.kttkpm.quanlybanhangsieuthi.dto.CustomerForm;
 import btl.kttkpm.quanlybanhangsieuthi.entity.Bill;
 import btl.kttkpm.quanlybanhangsieuthi.entity.Customer;
 import btl.kttkpm.quanlybanhangsieuthi.entity.Item;
 import btl.kttkpm.quanlybanhangsieuthi.entity.Staff;
 import btl.kttkpm.quanlybanhangsieuthi.entity.User;
 import btl.kttkpm.quanlybanhangsieuthi.service.BillService;
+import btl.kttkpm.quanlybanhangsieuthi.service.CustomerService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
@@ -26,9 +28,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class BillController {
 
     private final BillService billService;
+    private final CustomerService customerService;
 
-    public BillController(BillService billService) {
+    public BillController(BillService billService, CustomerService customerService) {
         this.billService = billService;
+        this.customerService = customerService;
     }
 
     @GetMapping("/bills/counter")
@@ -43,7 +47,50 @@ public class BillController {
         if (!isLoggedIn(session)) {
             return "redirect:/login";
         }
+        return renderCounterPage(itemKeyword, customerKeyword, selectedCustomerId, itemPage, customerPage, session, model, null);
+    }
 
+    @PostMapping("/bills/customers/new")
+    public String createNewCustomer(
+            @Valid @ModelAttribute("newCustomerForm") CustomerForm customerForm,
+            BindingResult bindingResult,
+            @RequestParam(required = false) String itemKeyword,
+            @RequestParam(required = false) String customerKeyword,
+            @RequestParam(defaultValue = "0") int itemPage,
+            @RequestParam(defaultValue = "0") int customerPage,
+            HttpSession session,
+            Model model) {
+        if (!isLoggedIn(session)) {
+            return "redirect:/login";
+        }
+
+        customerForm.setTotalRevenue(0f);
+        customerForm.setRewardPoint(0f);
+        customerForm.setStatus(1);
+
+        if (bindingResult.hasErrors()) {
+            return renderCounterPage(itemKeyword, customerKeyword, null, itemPage, customerPage, session, model, customerForm);
+        }
+
+        try {
+            Customer customer = customerService.create(customerForm);
+            session.setAttribute("selectedCustomerId", customer.getId());
+            return "redirect:/bills/counter";
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("error", ex.getMessage());
+            return renderCounterPage(itemKeyword, customerKeyword, null, itemPage, customerPage, session, model, customerForm);
+        }
+    }
+
+    private String renderCounterPage(
+            String itemKeyword,
+            String customerKeyword,
+            Integer selectedCustomerId,
+            int itemPage,
+            int customerPage,
+            HttpSession session,
+            Model model,
+            CustomerForm newCustomerForm) {
         CheckoutForm checkoutForm = new CheckoutForm();
         if (selectedCustomerId != null) {
             session.setAttribute("selectedCustomerId", selectedCustomerId);
@@ -67,6 +114,7 @@ public class BillController {
         model.addAttribute("customerTotalPages", customerResult.getTotalPages());
         model.addAttribute("cartItemForm", new CartItemForm());
         model.addAttribute("checkoutForm", checkoutForm);
+        model.addAttribute("newCustomerForm", newCustomerForm == null ? new CustomerForm() : newCustomerForm);
         model.addAttribute("cartItems", getCart(session));
         model.addAttribute("cartTotal", getCart(session).stream().map(BillCartItem::getLineAmount).reduce(0f, Float::sum));
         return "CounterPayment";
