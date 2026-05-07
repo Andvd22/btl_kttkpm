@@ -1,4 +1,5 @@
-﻿package btl.kttkpm.quanlybanhangsieuthi.dto;
+package btl.kttkpm.quanlybanhangsieuthi.dto;
+
 
 public class CheckoutForm {
 

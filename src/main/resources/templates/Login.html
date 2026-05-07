@@ -2,13 +2,13 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Đăng nhập</title>
+    <title>Dang nhap</title>
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
 <div class="container narrow">
-    <h1>Đăng nhập hệ thống</h1>
-    <p>Tài khoản mẫu: <strong>dovanan</strong> / <strong>123@n</strong></p>
+    <h1>Dang nhap he thong</h1>
+    <p>Tai khoan mau: <strong>dovanan</strong> / <strong>123@n</strong></p>
     <form th:action="@{/login}" th:object="${loginRequest}" method="post" class="card">
         <label>Username</label>
         <input type="text" th:field="*{username}">
@@ -19,7 +19,9 @@
         <small class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
 
         <p class="error" th:if="${error}" th:text="${error}"></p>
-        <button type="submit">Đăng nhập</button>
+        <p class="success" th:if="${success}" th:text="${success}"></p>
+        <button type="submit">Dang nhap</button>
+        <a class="button secondary" th:href="@{/register}">Dang ky tai khoan</a>
     </form>
 </div>
 </body>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dang ky</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="container narrow">
+    <h1>Dang ky tai khoan</h1>
+    <form th:action="@{/register}" th:object="${registerRequest}" method="post" class="card">
+        <label>Ho ten</label>
+        <input type="text" th:field="*{fullName}">
+        <small class="error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></small>
+
+        <label>So dien thoai</label>
+        <input type="text" th:field="*{phoneNumber}">
+        <small class="error" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></small>
+
+        <label>Username</label>
+        <input type="text" th:field="*{username}">
+        <small class="error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></small>
+
+        <label>Password</label>
+        <input type="password" th:field="*{password}">
+        <small class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
+
+        <label>Xac nhan password</label>
+        <input type="password" th:field="*{confirmPassword}">
+        <small class="error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></small>
+
+        <label>Dia chi</label>
+        <input type="text" th:field="*{address}">
+
+        <label>Email</label>
+        <input type="text" th:field="*{email}">
+
+        <p class="error" th:if="${error}" th:text="${error}"></p>
+        <button type="submit">Dang ky</button>
+        <a class="button secondary" th:href="@{/login}">Quay lai dang nhap</a>
+    </form>
+</div>
+</body>
+</html>
