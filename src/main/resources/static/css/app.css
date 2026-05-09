@@ -103,6 +103,14 @@ button, .button {
     display: inline-block;
 }
 
+/* Make form controls and action links full-width and centered inside forms */
+form button, form .button {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
 .button:visited,
 .button:hover,
 .button:active,

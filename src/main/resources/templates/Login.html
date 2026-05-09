@@ -8,7 +8,7 @@
 <body>
 <div class="container narrow">
     <h1>Dang nhap he thong</h1>
-    <p>Tai khoan mau: <strong>dovanan</strong> / <strong>123@n</strong></p>
+    <!-- <p>Tai khoan mau: <strong>dovanan</strong> / <strong>123@n</strong></p> -->
     <form th:action="@{/login}" th:object="${loginRequest}" method="post" class="card">
         <label>Username</label>
         <input type="text" th:field="*{username}">
